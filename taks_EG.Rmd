@@ -1,0 +1,84 @@
+---
+title: "Seqana Assignment"
+author: "Einav Grinberg"
+date: "1/31/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(sf)
+library(mapview)
+library(raster)
+```
+
+## Soil data visualization
+
+The following map displays soil organic carbon (SOC) stocks in Leeds a town in Columbia County, Wisconsin, United States from 2009.
+
+The SOC stocks are colored according to the value of each sample's metric ton of carbon per hectare $t/ha$. Where the  
+
+```{r vis data}
+#read vector data
+sample_data <- read_sf("seqana_gis_solutions_eng_challenge_existing_sample_data.gpkg")
+#visualize with mapview
+mapview(sample_data, map.types = "Esri.WorldImagery", alpha.regions = 0.5, zcol="soc_stock_t_ha")
+```
+
+## Soil data statistical analysis 
+
+The SOC stocks mean value is 43.52 $t/ha$, the median is 42.15 $t/ha$, the standard deviation is 9.565.845 $t/ha$, the max value is 72.20 $t/ha$, and the minimum value is 9/10 $t/ha$.
+
+In the histogram we can see a normal distribution of the SOC stocks. Where most of the samples are between 30-50 $t/ha$.
+
+```{r stats, echo=FALSE}
+#summary statistics
+summary(sample_data$soc_stock_t_ha)
+#standard deviation 
+sd(sample_data$soc_stock_t_ha)
+#histogram
+hist(sample_data$soc_stock_t_ha)
+```
+
+## SOC stock co-variates
+
+The following code adds the co-variate raster layers to the script and extracts the values based on the SOC stock point layer. 
+
+```{r raster}
+#read raster layers
+ph <- raster("open_land_map_soil_ph.tif")
+dem <- raster("CGIAR_SRTM90_V4.tif")
+ndvi <- raster("landsat7_c01_t1_annual_ndvi_2009.tif")
+clay <- raster("open_land_map_soil_clay.tif")
+#extract raster values and add to sample data
+ph_p <- extract(ph, sample_data)
+dem_p <- extract(dem, sample_data)
+ndvi_p <- extract(ndvi,sample_data)
+clay_p <-extract(clay, sample_data)
+sample_data<-cbind(sample_data, ph_p,dem_p,ndvi_p,clay_p)
+#check distribution of co-variates
+hist(sample_data$ph_p)
+hist(sample_data$dem_p)
+hist(sample_data$ndvi_p)
+hist(sample_data$clay_p)
+summary(sample_data[,4:7])
+```
+
+Pearson correlation measures the strength of the linear relationship between two variables (x, y) and the product of their standard deviations. It is a normalized measurement of the covariance, such that the result always has a value between −1 and 1. Where a value of -1 meaning a total negative linear correlation, 0 being no correlation, and + 1 meaning a total positive correlation, and if the p-value is < 5%, then the correlation between x and y is significant.
+
+```{r cor tests}
+#correlation between co-variantes
+cor.test(sample_data$soc_stock_t_ha, sample_data$ph_p)
+cor.test(sample_data$soc_stock_t_ha, sample_data$dem_p)
+cor.test(sample_data$soc_stock_t_ha, sample_data$ndvi_p)
+cor.test(sample_data$soc_stock_t_ha, sample_data$clay_p)
+```
+
+According to the results of the Pearson correlation test the SOC stocks are slightly dependent on the NDVI of the soil. 
+
+## Stratification approach
+
+Each co-variate can affect the variability of the soil. For example, moisture, vegetation cover, hydrologic conditions, management history or other variables that might be affecting the topsoil of the SOC.
+
+In the sample data we need more data to divide into strata the points.
+Firstly 
