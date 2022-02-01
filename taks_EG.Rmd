@@ -16,7 +16,7 @@ library(raster)
 
 The following map displays soil organic carbon (SOC) stocks in Leeds a town in Columbia County, Wisconsin, United States from 2009.
 
-The SOC stocks are colored according to the value of each sample's metric ton of carbon per hectare $t/ha$. Where the  
+The SOC stocks are colored according to the value of each sample's metric ton of carbon per hectare $t/ha$. 
 
 ```{r vis data}
 #read vector data
