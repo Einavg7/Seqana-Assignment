@@ -80,5 +80,51 @@ According to the results of the Pearson correlation test the SOC stocks are slig
 
 Each co-variate can affect the variability of the soil. For example, moisture, vegetation cover, hydrologic conditions, management history or other variables that might be affecting the topsoil of the SOC.
 
-In the sample data we need more data to divide into strata the points.
-Firstly 
+According to the methodology we can stratify the sample data at hand with the co-variate but we would need a satellite image or a GPS device with a precision of 4 meters.
+
+To stratify the following steps would be taken -
+
+1. Calculate the minimum number of sampling points to be collected based on 3 parameters- hectares of grassland in the AOI, satellite calibration points, and increase of 30% for data validation.
+
+2. Decide on the stratifying factor - in this case I would choose to divide into stratum based on the NDVI since there is a correlation with the SOC. 
+
+3. Use raster data of NDVI for the plot to determine NDVI ranges - meaning that I would see which areas in the AOI can be grouped to low NDVI, medium NDVI and high NDVI. 
+
+4. In each NDVI boundary I will compute random points in QGIS or R.
+
+5. The decision on how many times to compute random points will be based on the results of at least 2 compuations. 
+
+6. When sampling the guidelines provided by the Regen Network will be followed.
+
+7. Lastly I will use standard sampling equations (see bellow) to calculate the SOC stocks potential mean and total based on the collected samples and compare between confidence intervals and estimated errors to conclude the most accurate results.
+
+* $N$ is the total population size. 
+* $n$ is the sample size. 
+* $s^2$ is the sample variance.
+* $\overline{y}$ is the estimated mean.
+* $\hat{t}$ is the estimated total.
+* SEM/SET is the standard error of the mean/total.
+
+Equations to calculate the estimated $\overline{y}$. 
+
+\begin{equation} 
+  \hat{var}(\overline{y})= (\frac{N-n}{N})(\frac{s^2}{n}) 
+\end{equation} 
+
+\begin{equation} 
+  SEM = \sqrt{\hat{var}(\overline{y})} 
+\end{equation} 
+
+Equations to calculate the estimated $\hat{t}$. 
+
+\begin{equation} 
+  \hat{t} = N{\overline{y}} 
+\end{equation} 
+
+\begin{equation} 
+  \hat{var}(\hat{t})= N^2\hat{var}(\overline{y}) 
+\end{equation} 
+
+\begin{equation} 
+  SET = \sqrt{\hat{var}(\hat{t})} 
+\end{equation} 
